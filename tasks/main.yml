@@ -1,0 +1,37 @@
+---
+# tasks file for apache
+- name: installing packages
+  yum:
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - "{{ web }}"
+    - "{{ fw }}"
+
+- name: start and enable services
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - "{{ web }}"
+    - "{{ fw }}"
+
+- name: enable firewall ports
+  firewalld:
+    zone: public
+    port: "{{ item }}"
+    state: enabled
+    permanent: yes
+  loop:
+    - 80/tcp
+    - 443/tcp
+  notify: restart fw
+
+- name: deploy template
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: apache
+    group: apache
+

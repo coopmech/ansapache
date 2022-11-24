@@ -1,0 +1,6 @@
+---
+# handlers file for apache
+- name: restart fw
+  service:
+    name: "{{ fw }}"
+    state: restarted
